@@ -1,7 +1,20 @@
 import uuid
 from datetime import datetime
-from sqlalchemy import String, Integer, Boolean, DateTime, ForeignKey, Text, Enum as PgEnum, Float, func
+
+from sqlalchemy import (
+    Boolean,
+    DateTime,
+    Float,
+    ForeignKey,
+    Integer,
+    String,
+    Text,
+    UniqueConstraint,
+    func,
+)
+from sqlalchemy import Enum as PgEnum
 from sqlalchemy.orm import Mapped, mapped_column
+
 from app.database.session import Base
 
 QUESTION_TYPES = ("single_mcq", "multi_select", "written")
@@ -42,6 +55,7 @@ class Choice(Base):
 class ExamQuestion(Base):
     """Frozen snapshot: links a question to an exam with an order."""
     __tablename__ = "exam_questions"
+    __table_args__ = (UniqueConstraint("exam_id", "question_id", name="uq_exam_question"),)
 
     id: Mapped[str] = mapped_column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
     exam_id: Mapped[str] = mapped_column(String, ForeignKey("examinations.id", ondelete="CASCADE"))

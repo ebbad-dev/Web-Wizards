@@ -71,3 +71,18 @@ Both members are full-stack developers working across frontend and backend.
 - Security review
 - Deployment configuration
 - README and test credentials
+
+## Outstanding Shared Decision: D3 — Attempt Duplicate Constraint
+
+The `Attempt` model currently has no database uniqueness constraint on `(exam_id, candidate_id)`.
+
+The correct constraint depends on the exam retake policy, which has not yet been agreed:
+
+- If retakes are never permitted → `UniqueConstraint("exam_id", "candidate_id")` on the Attempt table.
+- If retakes are permitted but concurrent active attempts must be blocked → partial unique index filtered on `status = 'in_progress'`.
+- If unlimited retakes are allowed with no DB enforcement → application-layer validation only.
+
+**Member B must confirm the retake / concurrency policy before the Phase 4 attempt engine is integrated.**
+Member A will add the agreed constraint to the migration once policy is confirmed.
+
+Until this is resolved, `docs/security.md` does not claim a database-level duplicate attempt constraint exists.

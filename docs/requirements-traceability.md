@@ -2,6 +2,7 @@
 
 | Req ID | Requirement | Module | Phase | Status |
 |---|---|---|---|---|
+| 1.0 | Engineering Foundation (Phase 1) | backend, frontend, DB | 1 | **Complete** |
 | 3.1 | Authentication & Authorization | auth, users | 2 | Planned |
 | 3.2 | Examination Management | examinations | 3 | Planned |
 | 3.3 | Question Management | questions | 3 | Planned |

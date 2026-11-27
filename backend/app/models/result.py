@@ -1,13 +1,14 @@
 import uuid
 from datetime import datetime
-from sqlalchemy import String, DateTime, ForeignKey, Boolean, Float, func, UniqueConstraint
+
+from sqlalchemy import Boolean, DateTime, Float, ForeignKey, String, func
 from sqlalchemy.orm import Mapped, mapped_column
+
 from app.database.session import Base
 
 
 class Result(Base):
     __tablename__ = "results"
-    __table_args__ = (UniqueConstraint("attempt_id"),)
 
     id: Mapped[str] = mapped_column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
     attempt_id: Mapped[str] = mapped_column(String, ForeignKey("attempts.id"), unique=True)

@@ -1,7 +1,10 @@
 import uuid
 from datetime import datetime
-from sqlalchemy import String, DateTime, ForeignKey, Text, Enum as PgEnum, Boolean, Float, func, JSON
+
+from sqlalchemy import JSON, Boolean, DateTime, Float, ForeignKey, String, Text, func
+from sqlalchemy import Enum as PgEnum
 from sqlalchemy.orm import Mapped, mapped_column
+
 from app.database.session import Base
 
 ATTEMPT_STATUSES = ("in_progress", "submitted", "expired")

@@ -1,7 +1,10 @@
 import uuid
 from datetime import datetime
-from sqlalchemy import String, Integer, Boolean, DateTime, ForeignKey, Text, Enum as PgEnum, func
+
+from sqlalchemy import Boolean, DateTime, ForeignKey, Integer, String, Text, func
+from sqlalchemy import Enum as PgEnum
 from sqlalchemy.orm import Mapped, mapped_column
+
 from app.database.session import Base
 
 EXAM_STATUSES = ("draft", "published", "ongoing", "completed")

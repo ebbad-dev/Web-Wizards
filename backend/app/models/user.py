@@ -1,7 +1,10 @@
 import uuid
 from datetime import datetime
-from sqlalchemy import String, Boolean, Enum as PgEnum, DateTime, func
+
+from sqlalchemy import Boolean, DateTime, String, func
+from sqlalchemy import Enum as PgEnum
 from sqlalchemy.orm import Mapped, mapped_column
+
 from app.database.session import Base
 
 USER_ROLES = ("administrator", "examiner", "candidate")

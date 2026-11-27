@@ -21,7 +21,15 @@
 - Deadlines computed server-side: `started_at + duration_minutes`
 - Submission rejected if `now() > deadline`
 - Question order frozen at attempt creation time (JSON snapshot)
-- Duplicate attempt creation blocked by DB constraint (one active attempt per candidate per exam)
+- Duplicate active attempt prevention: retake / concurrency policy under review with Person 2 (D3).
+  A database-level constraint will be added once the policy is finalised (Phase 4 prerequisite).
+
+## Logging
+- Structured JSON logs via Python `logging.config.dictConfig`
+- Logs written to stdout (compatible with Docker / systemd log collection)
+- HTTP 4xx/5xx requests logged at WARNING / ERROR level with method and path only
+- Passwords, tokens, and secrets are never logged
+- Validation error field names are logged but not field values
 
 ## Dispute Integrity
 - Original scores immutable once stored

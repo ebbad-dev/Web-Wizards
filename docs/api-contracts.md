@@ -3,6 +3,31 @@
 Base: `/api/v1`
 Auth: Bearer JWT in `Authorization` header.
 
+## Ops Endpoints (no prefix)
+
+| Method | Path | Auth | Description |
+|---|---|---|---|
+| GET | /api/health | None | Liveness probe — always returns `{"status":"ok","app":"NIGRAN-360"}` as long as the process is running |
+| GET | /api/ready | None | Readiness probe — returns 200 `{"status":"ok","database":"connected"}` when PostgreSQL is reachable; 503 `{"status":"unavailable","database":"unreachable"}` otherwise |
+
+## Standard Error Response
+
+All error responses use a consistent envelope:
+
+```json
+{
+  "status": "error",
+  "code": 422,
+  "message": "Request validation failed",
+  "details": [
+    { "field": "email", "message": "value is not a valid email address" }
+  ]
+}
+```
+
+`details` is present only for validation errors (HTTP 422).  
+HTTP 404, 405, 500, etc. omit `details`.
+
 ## Auth
 | Method | Path | Auth | Description |
 |---|---|---|---|
