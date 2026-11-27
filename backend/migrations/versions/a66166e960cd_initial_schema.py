@@ -14,9 +14,8 @@ because the attempt retake / concurrency policy has not yet been finalised with
 Person 2.  That constraint is tracked as D3 and must be added before the
 candidate attempt engine is integrated (Phase 4).
 """
-from alembic import op
 import sqlalchemy as sa
-
+from alembic import op
 
 # revision identifiers, used by Alembic.
 revision = "a66166e960cd"
