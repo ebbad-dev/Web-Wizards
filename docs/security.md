@@ -1,9 +1,16 @@
 # NIGRAN-360 — Security Design
 
-## Authentication
-- Passwords hashed with Argon2id (memory-hard, resistant to GPU attacks)
-- JWT access tokens (short-lived, 60 min), refresh tokens (7 days)
-- Tokens stored in memory on the client; refresh token in httpOnly cookie (Phase 2)
+## Authentication (Phase 2 — implemented)
+- Passwords hashed with Argon2id (time_cost=2, memory_cost=65536, parallelism=2)
+- JWT access tokens (60 min) stored **in Zustand in-memory closure only** — never in localStorage or sessionStorage
+- Refresh tokens (7 days) stored in an **HttpOnly SameSite=Lax** cookie; never accessible from JavaScript
+- Refresh-token rotation: a successful `/auth/refresh` revokes the old JTI and issues a new refresh token; reuse of a rotated token returns 401
+- DB-backed JTI revocation table (`revoked_tokens`) with unique JTI index + expires_at index for cleanup
+- CSRF double-submit cookie pattern on `logout` and `refresh`: non-HttpOnly `csrf_token` cookie + `X-CSRF-Token` header
+- On page reload, session is restored by calling `/auth/refresh` via the HttpOnly cookie — no credentials in browser storage
+- Rate limiting: in-process sliding window, 10 attempts per IP per 15 minutes on `/auth/login`
+- Invalid credentials return generic 401 "Invalid credentials" — account existence is not revealed
+- Deactivated accounts cannot authenticate (403 returned after password check passes)
 
 ## Authorization
 - All permission checks enforced on the backend via dependency injection
@@ -45,6 +52,14 @@
 ## Threat Model (Key Risks)
 | Threat | Mitigation |
 |---|---|
+| XSS token theft | Access token in JS memory, never in DOM storage |
+| Refresh token theft | HttpOnly cookie, not reachable from JS |
+| CSRF on state-changing auth routes | Double-submit cookie checked on logout + refresh |
+| Credential brute-force | Rate limit 10/IP/15 min; constant-time Argon2 verify |
+| Account enumeration | Identical 401 for wrong password and unknown email |
+| Refresh token reuse (rotation attack) | Rotated token JTI revoked in DB; reuse returns 401 |
+| Last-admin lockout | Backend prevents deactivating the last active administrator |
+| Role escalation | No role field in self-update; role only set at creation |
 | Candidate sees answer keys | Never returned in attempt API responses |
 | Clock manipulation | Server timestamp for all deadlines |
 | Replay attack on answer save | Idempotent upsert; no side effects on repeat |

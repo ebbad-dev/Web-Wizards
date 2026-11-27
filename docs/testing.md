@@ -43,9 +43,30 @@ pytest -x
 
 ### Database Configuration for Tests
 
-The existing test suite (health, ping, error handling) uses an ASGI transport and does **not** require a live database.
+The test suite uses an **in-memory SQLite database** (`sqlite+aiosqlite:///:memory:`) via `aiosqlite`. No running PostgreSQL is required to run the tests.
 
-Future tests that touch the database (Phase 2+) must use a separate test database. Set `TEST_DATABASE_URL` in `.env` and configure a pytest fixture that creates and tears down the schema using Alembic or SQLAlchemy directly. Never run destructive tests against the development database.
+The shared `tests/conftest.py` fixture creates and tears down the schema per test function using SQLAlchemy's `Base.metadata.create_all`. Each test gets a fresh, isolated database.
+
+**To run all tests:**
+```bash
+cd backend
+source .venv/bin/activate
+pip install -e ".[dev]"   # installs aiosqlite, httpx, pytest-asyncio
+pytest
+```
+
+**Current test coverage (55 tests passing):**
+
+| Module | Tests |
+|---|---|
+| `tests/unit/test_password.py` | Argon2id hashing, verify, min-length, salt uniqueness |
+| `tests/unit/test_token.py` | JWT roundtrip, type enforcement, tamper rejection, JTI uniqueness, revocation |
+| `tests/unit/test_rate_limit.py` | Sliding window, per-IP isolation, reset |
+| `tests/integration/test_auth.py` | Register, login, rate limit, /me, logout + revocation, refresh, rotation |
+| `tests/integration/test_users.py` | CRUD, admin-only, self vs admin access, role escalation, last-admin lockout |
+| `tests/security/test_rbac.py` | Examiner/candidate cross-role, deactivated account, enum-safe error messages |
+
+For integration tests that need PostgreSQL (future phases), use a separate test database and configure `TEST_DATABASE_URL`. Never run destructive tests against the development database.
 
 ### Alembic Migration Testing
 
